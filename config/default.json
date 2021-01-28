@@ -1,0 +1,4 @@
+{
+  "mongoURI": "mongodb+srv://Shahzaib:Muradani101@hearmeout.e1mpx.mongodb.net/HearMeOut?retryWrites=true&w=majority",
+  "jwtSecret": "mysecrettoken"
+}

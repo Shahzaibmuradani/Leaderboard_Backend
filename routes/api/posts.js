@@ -1,0 +1,428 @@
+const express = require('express');
+var mongoose = require('mongoose');
+const router = express.Router();
+const { check, validationResult } = require('express-validator');
+const auth = require('../../middleware/auth');
+const Interest = require('../../models/Interest');
+const Post = require('../../models/Post');
+const User = require('../../models/User');
+
+// get all posts
+router.get('/', auth, async (req, res) => {
+  try {
+    const posts = await Post.find({ 'reviews.remarks': { $gte: 5 } }).sort({
+      date: -1,
+    });
+    res.json(posts);
+  } catch (err) {
+    console.log(err.message);
+    res.status(500).send('Server Error');
+  }
+});
+
+// get post by Id
+router.get('/:id', auth, async (req, res) => {
+  try {
+    const post = await Post.findById(req.params.id);
+    if (!post) {
+      return res.status(404).json({ msg: 'Post not Found' });
+    }
+    // else {
+    //   const exists = await Post.findOne({ 'faqs.user': req.user.id }).select({
+    //     user: 1,
+    //   });
+    //   if (exists) {
+    //     return res.status(400).json({ msg: 'Already Applied' });
+    //   }
+    // }
+    res.json(post);
+  } catch (err) {
+    if (err.kind === 'ObjectId') {
+      return res.status(404).json({ msg: 'Post not Found' });
+    }
+    res.status(500).send('Server Error');
+  }
+});
+
+// get post by Id
+router.get('/faqs/:id/:faqid', auth, async (req, res) => {
+  try {
+    const post = await Post.findById(req.params.id);
+    if (!post) {
+      return res.status(404).json({ msg: 'Post not Found' });
+    }
+    const questions = await Post.findOne({
+      _id: req.params.id,
+    }).select({ faqs: 1 });
+    // else {
+    //   const exists = await Post.findOne({ 'faqs.user': req.user.id }).select({
+    //     user: 1,
+    //   });
+    //   if (exists) {
+    //     return res.status(400).json({ msg: 'Already Applied' });
+    //   }
+    // }
+    res.json(questions);
+  } catch (err) {
+    if (err.kind === 'ObjectId') {
+      return res.status(404).json({ msg: 'Post not Found' });
+    }
+    res.status(500).send('Server Error');
+  }
+});
+
+//post
+router.post(
+  '/',
+  [
+    auth,
+    [check('text', 'Text is required').not().isEmpty()],
+    [check('field', 'Interest is required').not().isEmpty()],
+    [check('post_type', 'Post Type is required').not().isEmpty()],
+  ],
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    const { post_type, field, text, q1, q2, q3 } = req.body;
+
+    const questions = {};
+    try {
+      const user = await User.findById(req.user.id).select('-password');
+      if (q1 || q2 || q3) {
+        questions.q1 = q1;
+        questions.q2 = q2;
+        questions.q3 = q3;
+      }
+      const newPost = new Post({
+        user: req.user.id,
+        name: user.name,
+        avatar: user.avatar,
+        post_type: post_type,
+        field: field,
+        text: text,
+        faqs: { questions: { q1, q2, q3 } },
+      });
+      const post = await newPost.save();
+      const interest = await Post.aggregate([
+        {
+          $match: {
+            field: field,
+          },
+        },
+        {
+          $lookup: {
+            from: 'interests',
+            localField: 'field',
+            foreignField: 'field',
+            as: 'interest',
+          },
+        },
+        {
+          $unwind: '$interest',
+        },
+        {
+          $group: { _id: { email: '$interest.email' } },
+        },
+        {
+          $project: {
+            _id: 0,
+            emails: '$_id.email',
+          },
+        },
+      ]);
+      return res.json([post, interest]);
+    } catch (err) {
+      console.log(err.message);
+      res.status(500).send('Server Error');
+    }
+  }
+);
+
+// router.get('/', async (req, res) => {
+//   try {
+//     const post = await Post.findById(req.params.id);
+//     if (
+//       post.reviews.filter((review) => review.user.toString() === req.user.id)
+//         .length > 0
+//     ) {
+//       return res.status(400).json({ msg: 'Your Review already added' });
+//     }
+
+//   } catch (error) {
+//     console.log(error.message);
+//   }
+// });
+
+//review
+router.put(
+  '/review/:id',
+  [auth, [check('remarks', 'Remarks is required').not().isEmpty()]],
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+    const { remarks } = req.body;
+    const reviews = {};
+    try {
+      if (remarks) {
+        reviews.user = req.user.id;
+        reviews.remarks = remarks;
+      }
+
+      const post = await Post.findById(req.params.id);
+      if (
+        post.reviews.filter((review) => review.user.toString() === req.user.id)
+          .length > 0
+      ) {
+        return res.status(400).json({ msg: 'Your Review already added' });
+      }
+      post.reviews.unshift(reviews);
+      await post.save();
+
+      res.json(post.reviews);
+    } catch (err) {
+      console.log(err.message);
+      res.status(500).send('Server Error');
+    }
+  }
+);
+
+//answer faqs
+router.put('/faqs/:id/:faqid', auth, async (req, res) => {
+  try {
+    const exists = await Post.findOne({ 'faqs.user': req.user.id }).select({
+      user: 1,
+    });
+    if (exists) {
+      return res.status(400).json({ msg: 'Already Applied' });
+    } else {
+      const { a1, a2, a3 } = req.body;
+      const answers = {};
+      const user = await User.findById(req.user.id).select('-password');
+      if (a1 || a2 || a3) {
+        answers.a1 = a1;
+        answers.a2 = a2;
+        answers.a3 = a3;
+      }
+      const updatedpost = await Post.findOneAndUpdate(
+        { 'faqs._id': req.params.faqid },
+        {
+          $set: {
+            'faqs.$.user': req.user.id,
+            'faqs.$.name': user.name,
+            'faqs.$.avatar': user.avatar,
+            'faqs.$.answers': answers,
+          },
+        },
+        { new: true }
+      );
+      return res.json(updatedpost);
+    }
+    //}
+  } catch (err) {
+    console.log(err.message);
+    res.status(500).send('Server Error');
+  }
+});
+
+// router.put(
+//   '/:id',
+//   [auth, [check('text', 'Text is required').not().isEmpty()]],
+//   async (req, res) => {
+//     try {
+//       const post = await Post.findById(req.params.id);
+
+//       if (!post) {
+//         return res.status(404).json({ msg: 'Post not Found' });
+//       }
+
+//       if (post.user.toString() !== req.user.id) {
+//         return res.status(401).json({ msg: 'User not authorized' });
+//       }
+//       const { text } = req.body;
+//       const newPost = {};
+//       if (text) newPost.text = text;
+
+//       const updatedpost = await Post.findOneAndUpdate(
+//         { _id: req.params.id },
+//         { $set: newPost },
+//         { new: true }
+//       );
+//       return res.json(updatedpost);
+//     } catch (err) {
+//       console.log(err.message);
+//       if (err.kind === 'ObjectId') {
+//         return res.status(404).json({ msg: 'Post not Found' });
+//       }
+//       res.status(500).send('Server Error');
+//     }
+//   }
+// );
+
+// router.delete('/:id', auth, async (req, res) => {
+//   try {
+//     const post = await Post.findById(req.params.id);
+
+//     if (!post) {
+//       return res.status(404).json({ msg: 'Post not Found' });
+//     }
+
+//     if (post.user.toString() !== req.user.id) {
+//       return res.status(401).json({ msg: 'User not authorized' });
+//     }
+
+//     await post.remove();
+//     res.json({ msg: 'Post removed' });
+//   } catch (err) {
+//     console.log(err.message);
+//     if (err.kind === 'ObjectId') {
+//       return res.status(404).json({ msg: 'Post not Found' });
+//     }
+//     res.status(500).send('Server Error');
+//   }
+// });
+
+// router.put('/like/:id', auth, async (req, res) => {
+//   try {
+//     const post = await Post.findById(req.params.id);
+//     if (
+//       post.likes.filter((like) => like.user.toString() === req.user.id).length >
+//       0
+//     ) {
+//       return res.status(400).json({ msg: 'Post already liked' });
+//     }
+//     post.likes.unshift({ user: req.user.id });
+//     await post.save();
+
+//     res.json(post.likes);
+//   } catch (err) {
+//     console.log(err.message);
+//     res.status(500).send('Server Error');
+//   }
+// });
+
+// router.put('/unlike/:id', auth, async (req, res) => {
+//   try {
+//     const post = await Post.findById(req.params.id);
+//     if (
+//       post.likes.filter((like) => like.user.toString() === req.user.id)
+//         .length === 0
+//     ) {
+//       return res.status(400).json({ msg: 'Post has not yet been liked' });
+//     }
+//     const removeIndex = await post.likes
+//       .map((like) => like.user.toString())
+//       .indexOf(req.user.id);
+//     post.likes.splice(removeIndex, 1);
+//     await post.save();
+
+//     res.json(post.likes);
+//   } catch (err) {
+//     console.log(err.message);
+//     res.status(500).send('Server Error');
+//   }
+// });
+
+// router.post(
+//   '/comment/:id',
+//   [auth, [check('text', 'Text is required').not().isEmpty()]],
+//   async (req, res) => {
+//     const errors = validationResult(req);
+//     if (!errors.isEmpty()) {
+//       return res.status(400).json({ errors: errors.array() });
+//     }
+
+//     try {
+//       const user = await User.findById(req.user.id).select('-password');
+//       const post = await Post.findById(req.params.id);
+
+//       const newComment = {
+//         text: req.body.text,
+//         name: user.name,
+//         avatar: user.avatar,
+//         user: req.user.id,
+//       };
+
+//       post.comments.unshift(newComment);
+//       await post.save();
+
+//       res.json(post.comments);
+//     } catch (err) {
+//       console.log(err.message);
+//       res.status(500).send('Sever Error');
+//     }
+//   }
+// );
+
+// router.put(
+//   '/comment/:id/:comment_id',
+//   [auth, [check('text', 'Text is required').not().isEmpty()]],
+//   async (req, res) => {
+//     try {
+//       let post = await Post.findById(req.params.id);
+//       const comment = post.comments.find(
+//         (comment) => comment.id === req.params.comment_id
+//       );
+
+//       if (!comment) {
+//         return res.status(404).json({ msg: 'Comment not found' });
+//       }
+
+//       if (comment.user.toString() !== req.user.id) {
+//         return res.status(401).json({ msg: 'User not authorized' });
+//       }
+
+//       const { text } = req.body;
+//       const newComment = {};
+//       if (text) newComment.text = text;
+
+//       post = await Post.findOneAndUpdate(
+//         { 'comments._id': req.params.comment_id },
+//         {
+//           $set: {
+//             'comments.$.text': newComment.text,
+//           },
+//         },
+//         { new: true }
+//       );
+//       res.json(post.comments);
+//     } catch (err) {
+//       console.log(err.message);
+//       res.status(500).send('Server Error');
+//     }
+//   }
+// );
+
+// router.delete('/comment/:id/:comment_id', auth, async (req, res) => {
+//   try {
+//     const post = await Post.findById(req.params.id);
+//     const comment = post.comments.find(
+//       (comment) => comment.id === req.params.comment_id
+//     );
+
+//     if (!comment) {
+//       return res.status(404).json({ msg: 'Comment not found' });
+//     }
+
+//     if (comment.user.toString() !== req.user.id) {
+//       return res.status(401).json({ msg: 'User not authorized' });
+//     }
+
+//     const removeIndex = await post.comments
+//       .map((comment) => comment.user.toString())
+//       .indexOf(req.user.id);
+//     post.comments.splice(removeIndex, 1);
+//     await post.save();
+
+//     res.json(post.comments);
+//   } catch (err) {
+//     console.log(err.message);
+//     res.status(500).send('Server Error');
+//   }
+// });
+
+module.exports = router;
