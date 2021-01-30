@@ -7,7 +7,7 @@ import {Content, Textarea, Form, Text, View} from 'native-base';
 import {Button} from 'react-native-paper';
 import Alert from '../layout/Alert';
 
-const FAQs = ({addFaqs}) => {
+const Test = ({addFaqs}) => {
   const [formdata, setFormdata] = useState({
     q1: '',
     q2: '',
@@ -27,7 +27,7 @@ const FAQs = ({addFaqs}) => {
       <Content padder style={{backgroundColor: '#FFF'}}>
         <Form>
           <View style={styles.container}>
-            <Text style={styles.sectionsub}>Make your FAQs Here!!</Text>
+            <Text style={styles.sectionsub}>Make your Test Here!!</Text>
           </View>
           <Alert />
           <View style={styles.container1}>
@@ -96,8 +96,8 @@ const styles = StyleSheet.create({
   },
 });
 
-FAQs.propTypes = {
+Test.propTypes = {
   addFaqs: PropTypes.func.isRequired,
 };
 
-export default connect(null, {addFaqs})(FAQs);
+export default connect(null, {addFaqs})(Test);

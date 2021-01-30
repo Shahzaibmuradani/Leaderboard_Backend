@@ -3,7 +3,7 @@ import {createStackNavigator} from '@react-navigation/stack';
 
 import Login from '../auth/Login';
 import Register from '../auth/Register';
-import FAQs from '../Tabs/FAQs';
+import Test from '../Tabs/Test';
 import Reviews from '../Tabs/Reviews';
 
 import AppTabsScreen from './AppTabsScreen';
@@ -17,6 +17,7 @@ import EditEducation from '../Dashboard/EditEducation';
 import EditExperience from '../Dashboard/EditExperience';
 import Apply from '../Tabs/Apply';
 import PostItem from '../Tabs/PostItem';
+import Help from '../Tabs/Help';
 
 const DefaultStack = createStackNavigator();
 
@@ -27,10 +28,11 @@ const DefaultStackScreen = () => {
       <DefaultStack.Screen name="Register" component={Register} />
       <DefaultStack.Screen name="AppDrawerScreen" component={AppDrawerScreen} />
       <DefaultStack.Screen name="AppTabsScreen" component={AppTabsScreen} />
-      <DefaultStack.Screen name="FAQs" component={FAQs} />
+      <DefaultStack.Screen name="Test" component={Test} />
       <DefaultStack.Screen name="PostItem" component={PostItem} />
       <DefaultStack.Screen name="Apply" component={Apply} />
       <DefaultStack.Screen name="Reviews" component={Reviews} />
+      <DefaultStack.Screen name="Help" component={Help} />
       <DefaultStack.Screen name="CreateProfile" component={CreateProfile} />
       <DefaultStack.Screen
         name="DashboardActions"

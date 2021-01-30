@@ -23,7 +23,6 @@ export const loadUser = () => async (dispatch) => {
       },
     };
     const res = await axios.get('http://10.0.2.2:3000/api/auth', config);
-    console.log(res.data);
     dispatch({
       type: USER_LOADED,
       payload: res.data,
@@ -181,7 +180,6 @@ export const addFaqs = (FormData) => async (dispatch) => {
 
 // Logout / Clear Profile
 export const logout = () => async (dispatch) => {
-  console.log('Logout');
   dispatch({
     type: LOGOUT,
   });

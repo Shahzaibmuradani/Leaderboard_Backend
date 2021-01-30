@@ -68,7 +68,7 @@ function DrawerContent(props) {
             </View>
           </View>
         </View>
-        {/* <Drawer.Section style={styles.drawerSection}>
+        <Drawer.Section style={styles.drawerSection}>
           <DrawerItem
             icon={({color, size}) => (
               <Icon name="home-outline" color={color} size={size} />
@@ -87,7 +87,16 @@ function DrawerContent(props) {
               props.navigation.navigate('Home');
             }}
           />
-        </Drawer.Section> */}
+          <DrawerItem
+            icon={({color, size}) => (
+              <Icon name="help-circle-outline" color={color} size={size} />
+            )}
+            label="Help"
+            onPress={() => {
+              props.navigation.navigate('Home');
+            }}
+          />
+        </Drawer.Section>
       </DrawerContentScrollView>
       <Drawer.Section style={styles.bottomDrawerSection}>
         <DrawerItem

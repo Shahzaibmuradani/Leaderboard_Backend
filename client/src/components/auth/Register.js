@@ -9,6 +9,7 @@ import {
   TouchableOpacity,
   KeyboardAvoidingView,
   ToastAndroid,
+  ImageBackground,
 } from 'react-native';
 
 import {Button} from 'react-native-paper';
@@ -16,8 +17,10 @@ import {TextInput} from 'react-native-paper';
 import {register} from '../../actions/auth';
 import {setAlert} from '../../actions/alert';
 import Alert from '../layout/Alert';
+import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
 const Register = ({navigation, setAlert, register, isAuthenticated}) => {
-  const [errortoast, setErrortoast] = useState(false);
+  // const [errortoast, setErrortoast] = useState(false);
+  const cardImage = require('../../img/connection.jpg');
 
   const [formdata, setFormdata] = useState({
     name: '',
@@ -50,10 +53,13 @@ const Register = ({navigation, setAlert, register, isAuthenticated}) => {
 
   return (
     <>
+      <View>
+        <Text style={styles.text}>
+          HearMeOut <FontAwesome5Icon name="bullhorn" size={22} />
+        </Text>
+      </View>
       <View style={styles.sectionContainer}>
-        <Text style={styles.sectionTitle}>Welcome User!!</Text>
         <View style={styles.sectionContainer}>
-          <Alert></Alert>
           <Text style={styles.sectionsubtitle}>Create New Account</Text>
           <TextInput
             style={styles.input}
@@ -106,6 +112,7 @@ const Register = ({navigation, setAlert, register, isAuthenticated}) => {
               Already have an account? Sign in
             </Text>
           </TouchableOpacity>
+          <Alert></Alert>
           {/* {errortoast ? (
             // ToastAndroid.showWithGravityAndOffset(
             //   'Password does not Match',
@@ -125,9 +132,19 @@ const Register = ({navigation, setAlert, register, isAuthenticated}) => {
 };
 
 const styles = StyleSheet.create({
+  text: {
+    marginTop: 24,
+    backgroundColor: '#FFF',
+    color: '#0C6CD5',
+    textAlign: 'center',
+    fontWeight: '700',
+    fontSize: 24,
+  },
   sectionContainer: {
-    marginTop: 32,
+    backgroundColor: '#FFF',
+    marginTop: 28,
     paddingHorizontal: 24,
+    marginBottom: 32,
   },
   sectionTitle: {
     fontSize: 32,
@@ -139,6 +156,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '700',
     color: '#0C6CD5',
+    alignSelf: 'center',
   },
   input: {
     marginTop: 14,

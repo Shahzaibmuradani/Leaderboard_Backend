@@ -80,7 +80,6 @@ export const addAnswers = (FormData, id, faqid) => async (dispatch) => {
       FormData,
       config,
     );
-    console.log(res.data);
     dispatch(setAlert('Answers Submitted', '#4BB543'));
   } catch (err) {
     const errors = err.response.data.errors;

@@ -5,6 +5,8 @@ import {getPosts} from '../../actions/post';
 import Spinner from '../layout/Spinner';
 import {loadUser} from '../../actions/auth';
 import PostItem from './PostItem';
+import {StyleSheet} from 'react-native';
+import {Container, Content} from 'native-base';
 
 const allPosts = ({
   navigation,
@@ -16,25 +18,38 @@ const allPosts = ({
   useEffect(() => {
     loadUser();
     getPosts();
-  }, [getPosts, loadUser]);
+    posts;
+  }, [getPosts, loadUser, posts]);
 
   return (
     <>
       {loading && user === null ? (
         <Spinner />
       ) : (
-        posts.map((post) => (
-          <PostItem
-            key={post._id}
-            post={post}
-            user={user}
-            navigation={navigation}
-          />
-        ))
+        <>
+          <Container style={styles.container}>
+            <Content padder style={{padding: 10}}>
+              {posts.map((post) => (
+                <PostItem
+                  key={post._id}
+                  post={post}
+                  user={user}
+                  navigation={navigation}
+                />
+              ))}
+            </Content>
+          </Container>
+        </>
       )}
     </>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    backgroundColor: '#FFF',
+  },
+});
 
 allPosts.propTypes = {
   loadUser: PropTypes.func.isRequired,

@@ -87,8 +87,6 @@ router.post(
       if (studentprofile) {
         if (user.status === 'Student') {
           //   //Update
-          console.log(user.status);
-          console.log(user.email);
           interestfield.email = user.email;
           await Interest.findOneAndUpdate(
             { user: req.user.id },

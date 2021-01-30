@@ -93,7 +93,6 @@ export const addEducation = (FormData) => async (dispatch) => {
 
     dispatch(setAlert('Education Added', '#4BB543'));
   } catch (err) {
-    console.log(err.message);
     const errors = err.response.data.errors;
     if (errors) {
       errors.forEach((error) => dispatch(setAlert(error.msg, '#F72F4D')));
@@ -131,7 +130,6 @@ export const editEducation = (FormData, id) => async (dispatch) => {
       payload: res.data,
     });
   } catch (err) {
-    console.log(err.message);
     const errors = err.response.data.errors;
     if (errors) {
       errors.forEach((error) => dispatch(setAlert(error.msg, '#F72F4D')));
@@ -169,7 +167,6 @@ export const editExperience = (FormData, id) => async (dispatch) => {
       payload: res.data,
     });
   } catch (err) {
-    console.log(err.message);
     const errors = err.response.data.errors;
     if (errors) {
       errors.forEach((error) => dispatch(setAlert(error.msg, '#F72F4D')));

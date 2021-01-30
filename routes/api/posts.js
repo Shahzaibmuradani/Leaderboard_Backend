@@ -1,9 +1,8 @@
 const express = require('express');
-var mongoose = require('mongoose');
+//var mongoose = require('mongoose');
 const router = express.Router();
 const { check, validationResult } = require('express-validator');
 const auth = require('../../middleware/auth');
-const Interest = require('../../models/Interest');
 const Post = require('../../models/Post');
 const User = require('../../models/User');
 
@@ -194,9 +193,10 @@ router.put(
 //answer faqs
 router.put('/faqs/:id/:faqid', auth, async (req, res) => {
   try {
-    const exists = await Post.findOne({ 'faqs.user': req.user.id }).select({
-      user: 1,
-    });
+    const post = await Post.findById(req.params.id);
+    const exists = post.faqs.filter(
+      (faq) => JSON.stringify(faq.user) === req.user.id
+    ).length;
     if (exists) {
       return res.status(400).json({ msg: 'Already Applied' });
     } else {

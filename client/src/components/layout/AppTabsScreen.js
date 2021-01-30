@@ -10,6 +10,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import Posts from '../Tabs/allPosts';
 import Home from '../Tabs/Home';
 import DrawerIcon from './DrawerIcon';
+import Help from '../Tabs/Help';
 
 // import {loadUser} from '../../actions/auth';
 
@@ -45,6 +46,21 @@ const AppTabsScreen = (props) => {
             tabBarIcon: (props) => (
               <MaterialCommunityIcons
                 name="account"
+                color={props.color}
+                size={20}
+              />
+            ),
+          }}
+        />
+        <AppTabs.Screen
+          name="Help"
+          component={Help}
+          options={{
+            tabBarColor: '#0C6CD5',
+            tabBarLabel: 'Help',
+            tabBarIcon: (props) => (
+              <MaterialCommunityIcons
+                name="help-circle-outline"
                 color={props.color}
                 size={20}
               />

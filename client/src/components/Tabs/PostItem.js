@@ -1,12 +1,10 @@
-import React from 'react';
+import React, {Fragment} from 'react';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 
 import {Button} from 'react-native-paper';
 import {StyleSheet, TouchableOpacity} from 'react-native';
 import {
-  Container,
-  Content,
   Icon,
   Card,
   CardItem,
@@ -17,7 +15,7 @@ import {
   View,
 } from 'native-base';
 import moment from 'moment';
-import Apply from './Apply';
+//import Apply from './Apply';
 const logo = require('../../img/showcase.jpg');
 
 const PostItem = ({
@@ -27,76 +25,77 @@ const PostItem = ({
 }) => {
   return (
     <>
-      <Container style={styles.container}>
-        <Content padder style={{padding: 10}}>
-          <Card style={styles.mb}>
-            <CardItem bordered>
-              <Left>
-                <Thumbnail source={logo} />
-                <Body>
-                  <Text>{name}</Text>
-                  <Text note>{moment(date).format('YYYY/MM/DD')}</Text>
-                </Body>
-              </Left>
-            </CardItem>
-            <CardItem>
-              <Body>
-                <Text>{text}</Text>
-              </Body>
-            </CardItem>
-            <CardItem>
-              <Left>
-                <Button transparent textStyle={{color: '#87838B'}}>
-                  <Icon name="logo-github" />
-                  <Text>1,926 stars</Text>
-                </Button>
-              </Left>
-            </CardItem>
-            <CardItem footer bordered>
-              {user && user.status === 'Student' ? (
-                <>
-                  <View style={styles.row}>
-                    <View style={styles.section}>
-                      <TouchableOpacity>
+      <Card style={styles.mb}>
+        <CardItem bordered>
+          <Left>
+            <Thumbnail source={logo} />
+            <Body>
+              <Text>{name}</Text>
+              <Text note>{moment(date).format('YYYY/MM/DD')}</Text>
+            </Body>
+          </Left>
+        </CardItem>
+        <CardItem>
+          <Body>
+            <Text>{text}</Text>
+          </Body>
+        </CardItem>
+        <CardItem footer bordered>
+          {user && user.status === 'Student' ? (
+            <>
+              <View style={styles.row}>
+                <View style={styles.section}>
+                  {faqs.map((faq) =>
+                    faq.user === user._id ? (
+                      <Fragment key={user._id}>
+                        <TouchableOpacity>
+                          <Text
+                            style={[{color: '#0C6CD5'}, {marginEnd: 14}]}
+                            onPress={() => navigation.navigate('Reviews')}>
+                            Review
+                          </Text>
+                        </TouchableOpacity>
                         <Text
-                          style={[{color: '#0C6CD5'}, {marginEnd: 18}]}
-                          onPress={() => navigation.navigate('Reviews')}>
-                          Review
+                          key={faq._id}
+                          style={{color: 'green', marginEnd: 18}}
+                          onPress={() =>
+                            navigation.navigate('Apply', {faqs: faqs, _id: _id})
+                          }>
+                          Applied
                         </Text>
-                      </TouchableOpacity>
+                      </Fragment>
+                    ) : (
                       <TouchableOpacity>
                         <Text
-                          style={{color: '#0C6CD5'}}
+                          key={faq._id}
+                          style={[{color: '#0C6CD5'}, {marginStart: 12}]}
                           onPress={() =>
                             navigation.navigate('Apply', {faqs: faqs, _id: _id})
                           }>
                           Apply
                         </Text>
                       </TouchableOpacity>
-                    </View>
-                  </View>
-                </>
-              ) : (
-                <Button
-                  mode="contained"
-                  style={styles.button}
-                  color="#0C6CD5"
-                  onPress={() => navigation.navigate('FAQs')}>
-                  Make FAQs
-                </Button>
-              )}
-            </CardItem>
-          </Card>
-        </Content>
-      </Container>
+                    ),
+                  )}
+                </View>
+              </View>
+            </>
+          ) : (
+            <Button
+              mode="contained"
+              style={styles.button}
+              color="#0C6CD5"
+              onPress={() => navigation.navigate('Test')}>
+              Make FAQs
+            </Button>
+          )}
+        </CardItem>
+      </Card>
     </>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    backgroundColor: '#FFF',
-  },
   text: {
     alignSelf: 'center',
     marginBottom: 7,
@@ -124,9 +123,5 @@ const styles = StyleSheet.create({
 PostItem.propTypes = {
   post: PropTypes.object.isRequired,
 };
-
-// const mapStateToProps = state => ({
-
-// })
 
 export default connect(null, {})(PostItem);

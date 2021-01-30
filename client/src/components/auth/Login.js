@@ -3,13 +3,16 @@ import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
 import {login} from '../../actions/auth';
 
-import {StyleSheet, View, Text, TouchableOpacity} from 'react-native';
+import {StyleSheet, View, Text, TouchableOpacity, Image} from 'react-native';
 
 import {Button} from 'react-native-paper';
 import {TextInput} from 'react-native-paper';
 import Alert from '../layout/Alert';
+import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
 
 const Login = ({navigation, login, isAuthenticated}) => {
+  const cardImage = require('../../img/connection.jpg');
+
   const [formdata, setFormdata] = useState({
     email: '',
     password: '',
@@ -33,9 +36,20 @@ const Login = ({navigation, login, isAuthenticated}) => {
 
   return (
     <>
+      <View>
+        <Text style={styles.text}>
+          HearMeOut <FontAwesome5Icon name="bullhorn" size={22} />
+        </Text>
+      </View>
       <View style={styles.sectionContainer}>
-        <Text style={styles.sectionTitle}>Welcome To Notify!!</Text>
         <View style={styles.sectionContainer}>
+          <Image
+            style={{
+              alignSelf: 'center',
+              height: 220,
+              width: '100%',
+            }}
+            source={cardImage}></Image>
           <Alert></Alert>
           <TextInput
             style={styles.input}
@@ -63,7 +77,7 @@ const Login = ({navigation, login, isAuthenticated}) => {
             <Text
               style={styles.sectionsub}
               onPress={() => navigation.navigate('Register')}>
-              Doesn't have an account? Sign up
+              Don't have an account? Sign up
             </Text>
           </TouchableOpacity>
         </View>
@@ -73,21 +87,25 @@ const Login = ({navigation, login, isAuthenticated}) => {
 };
 
 const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    marginTop: 22,
-    fontSize: 32,
-    fontWeight: '700',
-    color: 'black',
+  text: {
+    marginTop: 24,
+    backgroundColor: '#FFF',
+    color: '#0C6CD5',
     textAlign: 'center',
+    fontWeight: '700',
+    fontSize: 24,
+  },
+  sectionContainer: {
+    backgroundColor: '#FFF',
+    marginTop: 28,
+    paddingHorizontal: 24,
+    marginBottom: 32,
   },
   sectionsub: {
     fontSize: 18,
     fontWeight: '700',
     color: '#0C6CD5',
+    alignSelf: 'center',
   },
   input: {
     marginTop: 14,
