@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const { check, validationResult } = require('express-validator');
-const auth = require('../../middleware/auth');
-const User = require('../../models/User');
+// const auth = require('../../middleware/auth');
+// const User = require('../../models/User');
 const Help = require('../../models/Help');
 
 router.get('/', async (req, res) => {
@@ -11,7 +11,6 @@ router.get('/', async (req, res) => {
     if (!help) {
       return res.status(400).json({ msg: 'There is no help' });
     }
-    console.log(help);
     res.json(help);
   } catch (error) {
     console.log(error.message);
@@ -44,7 +43,6 @@ router.post(
       const help = await new Help({
         queries: [helpField],
       });
-      console.log(help);
       await help.save();
       res.json(help);
     } catch (err) {

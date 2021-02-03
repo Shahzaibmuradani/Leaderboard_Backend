@@ -43,7 +43,7 @@ router.get('/:id', auth, async (req, res) => {
   }
 });
 
-// get post by Id
+// get faq by Id
 router.get('/faqs/:id/:faqid', auth, async (req, res) => {
   try {
     const post = await Post.findById(req.params.id);
@@ -75,9 +75,9 @@ router.post(
   '/',
   [
     auth,
-    [check('text', 'Text is required').not().isEmpty()],
-    [check('field', 'Interest is required').not().isEmpty()],
-    [check('post_type', 'Post Type is required').not().isEmpty()],
+    check('text', 'Text is required').not().isEmpty(),
+    check('field', 'Interest is required').not().isEmpty(),
+    check('post_type', 'Post Type is required').not().isEmpty(),
   ],
   async (req, res) => {
     const errors = validationResult(req);
@@ -88,22 +88,34 @@ router.post(
     const { post_type, field, text, q1, q2, q3 } = req.body;
 
     const questions = {};
+    let newPost;
     try {
       const user = await User.findById(req.user.id).select('-password');
       if (q1 || q2 || q3) {
         questions.q1 = q1;
         questions.q2 = q2;
         questions.q3 = q3;
+
+        newPost = new Post({
+          user: req.user.id,
+          name: user.name,
+          avatar: user.avatar,
+          post_type: post_type,
+          field: field,
+          text: text,
+          faqs: { questions: { q1, q2, q3 } },
+        });
+      } else {
+        newPost = new Post({
+          user: req.user.id,
+          name: user.name,
+          avatar: user.avatar,
+          post_type: post_type,
+          field: field,
+          text: text,
+        });
       }
-      const newPost = new Post({
-        user: req.user.id,
-        name: user.name,
-        avatar: user.avatar,
-        post_type: post_type,
-        field: field,
-        text: text,
-        faqs: { questions: { q1, q2, q3 } },
-      });
+
       const post = await newPost.save();
       const interest = await Post.aggregate([
         {
@@ -155,10 +167,10 @@ router.post(
 //   }
 // });
 
-//review
+//add review
 router.put(
   '/review/:id',
-  [auth, [check('remarks', 'Remarks is required').not().isEmpty()]],
+  [auth, check('remarks', 'Remarks is required').not().isEmpty()],
   async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -189,6 +201,53 @@ router.put(
     }
   }
 );
+
+//add questions
+router.put('/faqs/:id', auth, async (req, res) => {
+  // faqs: { questions: { q1, q2, q3 } }
+
+  try {
+    const post = await Post.findById(req.params.id);
+
+    const exists = post.faqs.length > 0;
+
+    if (exists) {
+      return res.status(400).json({ msg: 'Already Added' });
+    } else {
+      const { q1, q2, q3 } = req.body;
+      const questions = {};
+
+      if (q1 || q2 || q3) {
+        questions.q1 = q1;
+        questions.q2 = q2;
+        questions.q3 = q3;
+      }
+      console.log(questions);
+      const po = await Post.findOne({ _id: req.params.id });
+      po.faqs.unshift({ questions: { q1, q2, q3 } });
+      // const up = new Post({
+      //   faqs: { questions: { q1, q2, q3 } }
+      // })
+      await po.save();
+      res.json(po);
+      console.log(po);
+      // const updatedpost = await Post.findOneAndUpdate(
+      //   { _id: '6017ee41b1430f28d40e9a84' },
+      //   {
+      //     $set: {
+      //       'faqs.$.questions': questions,
+      //     },
+      //   },
+      //   { new: true }
+      // );
+      // console.log(updatedpost);
+      // return res.json(updatedpost);
+    }
+  } catch (err) {
+    console.log(err.message);
+    res.status(500).send('Server Error');
+  }
+});
 
 //answer faqs
 router.put('/faqs/:id/:faqid', auth, async (req, res) => {
@@ -231,7 +290,7 @@ router.put('/faqs/:id/:faqid', auth, async (req, res) => {
 
 // router.put(
 //   '/:id',
-//   [auth, [check('text', 'Text is required').not().isEmpty()]],
+//   [auth, check('text', 'Text is required').not().isEmpty()],
 //   async (req, res) => {
 //     try {
 //       const post = await Post.findById(req.params.id);
@@ -329,7 +388,7 @@ router.put('/faqs/:id/:faqid', auth, async (req, res) => {
 
 // router.post(
 //   '/comment/:id',
-//   [auth, [check('text', 'Text is required').not().isEmpty()]],
+//   [auth, check('text', 'Text is required').not().isEmpty()],
 //   async (req, res) => {
 //     const errors = validationResult(req);
 //     if (!errors.isEmpty()) {
@@ -360,7 +419,7 @@ router.put('/faqs/:id/:faqid', auth, async (req, res) => {
 
 // router.put(
 //   '/comment/:id/:comment_id',
-//   [auth, [check('text', 'Text is required').not().isEmpty()]],
+//   [auth, check('text', 'Text is required').not().isEmpty()],
 //   async (req, res) => {
 //     try {
 //       let post = await Post.findById(req.params.id);
