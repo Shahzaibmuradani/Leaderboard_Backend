@@ -3,6 +3,7 @@ const express = require('express');
 const router = express.Router();
 const { check, validationResult } = require('express-validator');
 const auth = require('../../middleware/auth');
+const E_Post = require('../../models/E_Post');
 const Post = require('../../models/Post');
 const User = require('../../models/User');
 
@@ -72,12 +73,13 @@ router.get('/faqs/:id/:faqid', auth, async (req, res) => {
 
 //post
 router.post(
-  '/',
+  '/job',
   [
     auth,
     check('text', 'Text is required').not().isEmpty(),
-    check('field', 'Interest is required').not().isEmpty(),
-    check('post_type', 'Post Type is required').not().isEmpty(),
+    check('field', 'Field is required').not().isEmpty(),
+    check('skills', 'Skill is required').not().isEmpty(),
+    check('location', 'Location is required').not().isEmpty(),
   ],
   async (req, res) => {
     const errors = validationResult(req);
@@ -85,37 +87,46 @@ router.post(
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { post_type, field, text, q1, q2, q3 } = req.body;
+    const {
+      post_type,
+      field,
+      text,
+      location,
+      company,
+      email,
+      skills,
+      questions,
+    } = req.body;
 
-    const questions = {};
-    let newPost;
+    // const newPost = {};
+    // newPost.user = req.user.id;
+    // if (text) newPost.text = text;
+    // if (skills) {
+    //   newPost.skills = skills.split(',').map((skill) => skill.trim());
+    // }
+    // if (field) newPost.field = field;
+    // if (location) newPost.location = location;
+    // if (company) newPost.company = company;
+    // if (post_type) newPost.post_type = post_type;
+    // if (email) newPost.email = email;
+    // if (faqs) newPost.faqs.questions = faqs;
+
     try {
+      let newPost;
       const user = await User.findById(req.user.id).select('-password');
-      if (q1 || q2 || q3) {
-        questions.q1 = q1;
-        questions.q2 = q2;
-        questions.q3 = q3;
-
-        newPost = new Post({
-          user: req.user.id,
-          name: user.name,
-          avatar: user.avatar,
-          post_type: post_type,
-          field: field,
-          text: text,
-          faqs: { questions: { q1, q2, q3 } },
-        });
-      } else {
-        newPost = new Post({
-          user: req.user.id,
-          name: user.name,
-          avatar: user.avatar,
-          post_type: post_type,
-          field: field,
-          text: text,
-        });
-      }
-
+      newPost = new Post({
+        user: req.user.id,
+        name: user.name,
+        avatar: user.avatar,
+        post_type: post_type,
+        field: field,
+        text: text,
+        faqs: { questions: questions },
+        skills: skills.split(',').map((skill) => skill.trim()),
+        email: email,
+        company: company,
+        location: location,
+      });
       const post = await newPost.save();
       const interest = await Post.aggregate([
         {
@@ -144,7 +155,74 @@ router.post(
           },
         },
       ]);
-      return res.json([post, interest]);
+      res.json([post, interest]);
+    } catch (err) {
+      console.log(err.message);
+      res.status(500).send('Server Error');
+    }
+  }
+);
+
+router.post(
+  '/event',
+  [
+    auth,
+    check('text', 'Text is required').not().isEmpty(),
+    check('field', 'Field is required').not().isEmpty(),
+    check('location', 'Location is required').not().isEmpty(),
+  ],
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    const { post_type, field, text, location, company, email } = req.body;
+
+    console.log(req.body);
+    try {
+      let newPost;
+      const user = await User.findById(req.user.id).select('-password');
+      newPost = new E_Post({
+        user: req.user.id,
+        name: user.name,
+        avatar: user.avatar,
+        post_type: post_type,
+        field: field,
+        text: text,
+        email: email,
+        company: company,
+        location: location,
+      });
+      const post = await newPost.save();
+      const interest = await E_Post.aggregate([
+        {
+          $match: {
+            field: field,
+          },
+        },
+        {
+          $lookup: {
+            from: 'interests',
+            localField: 'field',
+            foreignField: 'field',
+            as: 'interest',
+          },
+        },
+        {
+          $unwind: '$interest',
+        },
+        {
+          $group: { _id: { email: '$interest.email' } },
+        },
+        {
+          $project: {
+            _id: 0,
+            emails: '$_id.email',
+          },
+        },
+      ]);
+      res.json([post, interest]);
     } catch (err) {
       console.log(err.message);
       res.status(500).send('Server Error');

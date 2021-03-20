@@ -18,10 +18,6 @@ const PostSchema = new Schema({
     type: String,
     required: true,
   },
-  skills: {
-    type: [String],
-    required: true,
-  },
   location: {
     type: String,
   },
@@ -68,33 +64,6 @@ const PostSchema = new Schema({
       },
     },
   ],
-  faqs: [
-    {
-      user: {
-        type: Schema.Types.ObjectId,
-        ref: 'users',
-      },
-      name: {
-        type: String,
-      },
-      avatar: {
-        type: String,
-      },
-      questions: [
-        {
-          index: {
-            type: Number,
-          },
-          text: {
-            type: String,
-          },
-        },
-      ],
-      answers: {
-        type: [String],
-      },
-    },
-  ],
   reviews: [
     {
       user: {
@@ -116,4 +85,4 @@ const PostSchema = new Schema({
   },
 });
 
-module.exports = Post = mongoose.model('post', PostSchema);
+module.exports = E_Post = mongoose.model('e_post', PostSchema);
