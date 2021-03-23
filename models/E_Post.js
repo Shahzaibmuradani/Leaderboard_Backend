@@ -26,7 +26,6 @@ const PostSchema = new Schema({
   },
   email: {
     type: String,
-    unique: true,
   },
   name: {
     type: String,

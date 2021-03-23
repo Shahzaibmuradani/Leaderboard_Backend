@@ -30,7 +30,6 @@ const PostSchema = new Schema({
   },
   email: {
     type: String,
-    unique: true,
   },
   name: {
     type: String,
@@ -90,9 +89,16 @@ const PostSchema = new Schema({
           },
         },
       ],
-      answers: {
-        type: [String],
-      },
+      answers: [
+        {
+          index: {
+            type: Number,
+          },
+          text: {
+            type: String,
+          },
+        },
+      ],
     },
   ],
   reviews: [
