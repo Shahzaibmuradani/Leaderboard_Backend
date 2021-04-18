@@ -8,9 +8,39 @@ const Post = require('../../models/Post');
 const User = require('../../models/User');
 
 // get all posts
-router.get('/', auth, async (req, res) => {
+router.get('/job', auth, async (req, res) => {
   try {
     const posts = await Post.find({ 'reviews.remarks': { $gte: 5 } }).sort({
+      date: -1,
+    });
+    //   .select({ reviews: 1 });
+    // let sum = 0;
+    // posts.forEach((element) => (sum = sum + parseFloat(element.remarks)));
+    // console.log(sum);
+    res.json(posts);
+  } catch (err) {
+    console.log(err.message);
+    res.status(500).send('Server Error');
+  }
+});
+
+// get all posts
+router.get('/job', auth, async (req, res) => {
+  try {
+    const posts = await Post.find().sort({
+      date: -1,
+    });
+    res.json(posts);
+  } catch (err) {
+    console.log(err.message);
+    res.status(500).send('Server Error');
+  }
+});
+
+// get all posts
+router.get('/event', auth, async (req, res) => {
+  try {
+    const posts = await E_Post.find().sort({
       date: -1,
     });
     res.json(posts);
@@ -21,9 +51,33 @@ router.get('/', auth, async (req, res) => {
 });
 
 // get post by Id
-router.get('/:id', auth, async (req, res) => {
+router.get('/job/:id', auth, async (req, res) => {
   try {
     const post = await Post.findById(req.params.id);
+    if (!post) {
+      return res.status(404).json({ msg: 'Post not Found' });
+    }
+    // else {
+    //   const exists = await Post.findOne({ 'faqs.user': req.user.id }).select({
+    //     user: 1,
+    //   });
+    //   if (exists) {
+    //     return res.status(400).json({ msg: 'Already Applied' });
+    //   }
+    // }
+    res.json(post);
+  } catch (err) {
+    if (err.kind === 'ObjectId') {
+      return res.status(404).json({ msg: 'Post not Found' });
+    }
+    res.status(500).send('Server Error');
+  }
+});
+
+// get post by Id
+router.get('/event/:id', auth, async (req, res) => {
+  try {
+    const post = await E_Post.findById(req.params.id);
     if (!post) {
       return res.status(404).json({ msg: 'Post not Found' });
     }
@@ -223,7 +277,6 @@ router.post(
         },
       ]);
       res.json([post, interest]);
-      console.log('Success');
     } catch (err) {
       console.log(err.message);
       res.status(500).send('Server Error');
@@ -248,7 +301,7 @@ router.post(
 
 //add review
 router.put(
-  '/review/:id',
+  '/job/review/:id',
   [auth, check('remarks', 'Remarks are required').not().isEmpty()],
   async (req, res) => {
     const errors = validationResult(req);
