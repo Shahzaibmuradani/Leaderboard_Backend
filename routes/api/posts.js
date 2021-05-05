@@ -480,6 +480,8 @@ router.put(
 //like job post
 router.put('/job/like/:id', auth, async (req, res) => {
   try {
+    console.log(req.params.id);
+    console.log(req.user.id);
     const post = await Post.findById(req.params.id);
     if (
       post.likes.filter((like) => like.user.toString() === req.user.id).length >
@@ -489,7 +491,6 @@ router.put('/job/like/:id', auth, async (req, res) => {
     }
     post.likes.unshift({ user: req.user.id });
     await post.save();
-
     res.json(post.likes);
   } catch (err) {
     console.log(err.message);
