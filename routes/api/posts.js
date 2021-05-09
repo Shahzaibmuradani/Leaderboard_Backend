@@ -10,23 +10,6 @@ const User = require('../../models/User');
 // get all posts
 router.get('/job', auth, async (req, res) => {
   try {
-    const posts = await Post.find({ 'reviews.remarks': { $gte: 5 } }).sort({
-      date: -1,
-    });
-    //   .select({ reviews: 1 });
-    // let sum = 0;
-    // posts.forEach((element) => (sum = sum + parseFloat(element.remarks)));
-    // console.log(sum);
-    res.json(posts);
-  } catch (err) {
-    console.log(err.message);
-    res.status(500).send('Server Error');
-  }
-});
-
-// get all posts
-router.get('/job', auth, async (req, res) => {
-  try {
     const posts = await Post.find().sort({
       date: -1,
     });
@@ -44,6 +27,94 @@ router.get('/event', auth, async (req, res) => {
       date: -1,
     });
     res.json(posts);
+  } catch (err) {
+    console.log(err.message);
+    res.status(500).send('Server Error');
+  }
+});
+
+router.get('/job/:id', auth, async (req, res) => {
+  try {
+    const posts = await Post.findById(req.params.id).sort({
+      date: -1,
+    });
+    console.log(posts);
+    res.json(posts);
+  } catch (err) {
+    console.log(err.message);
+    res.status(500).send('Server Error');
+  }
+});
+
+// get all posts by review
+router.get('/job/review', auth, async (req, res) => {
+  try {
+    const posts = await Post.find({ 'reviews.remarks': { $gte: 5 } }).sort({
+      date: -1,
+    });
+    //   .select({ reviews: 1 });
+    // let sum = 0;
+    // posts.forEach((element) => (sum = sum + parseFloat(element.remarks)));
+    // console.log(sum);
+    res.json(posts);
+  } catch (err) {
+    console.log(err.message);
+    res.status(500).send('Server Error');
+  }
+});
+
+router.get('/relevant', auth, async (req, res) => {
+  try {
+    const all = [];
+    const jobPosts = await Post.find({ isRelevant: false }).sort({
+      date: -1,
+    });
+    const eventPosts = await E_Post.find({ isRelevant: false })
+      .sort({
+        date: -1,
+      })
+      .countDocuments();
+    all.push(jobPosts, eventPosts);
+    res.json(all);
+  } catch (err) {
+    console.log(err.message);
+    res.status(500).send('Server Error');
+  }
+});
+
+router.put('/relevant/:id', auth, async (req, res) => {
+  try {
+    // const updatedJob = await Post.findOneAndUpdate(
+    //   { _id: req.params.id },
+    //   {
+    //     $set: {
+    //       isRelevant: true,
+    //     },
+    //   },
+    //   { new: true }
+    // );
+    const updatedEvent = await E_Post.findByIdAndUpdate(req.params.id);
+    // const updatedEvent = await E_Post.findOneAndUpdate(
+    //   { _id: req.params.id },
+    //   {
+    //     $set: {
+    //       isRelevant: true,
+    //     },
+    //   },
+    //   { new: true }
+    // );
+    //console.log(updatedJob);
+    //console.log(updatedEvent);
+    // if (updatedJob) {
+    //   await updatedJob.save();
+    //   return res.json(updatedJob);
+    // }
+    //else {
+    console.log(updatedEvent);
+    res.json(updatedEvent);
+    //await updatedEvent.save();
+    //return res.json(updatedEvent);
+    //}
   } catch (err) {
     console.log(err.message);
     res.status(500).send('Server Error');
@@ -70,6 +141,21 @@ router.get('/job/:id', auth, async (req, res) => {
     if (err.kind === 'ObjectId') {
       return res.status(404).json({ msg: 'Post not Found' });
     }
+    res.status(500).send('Server Error');
+  }
+});
+
+// get post by Id
+router.get('/user/jobs', auth, async (req, res) => {
+  try {
+    const post = await Post.find({ user: req.user.id });
+    console.log(post);
+    if (!post) {
+      return res.status(404).json({ msg: 'Post not Found' });
+    }
+    res.json(post);
+  } catch (err) {
+    console.log(err.message);
     res.status(500).send('Server Error');
   }
 });
