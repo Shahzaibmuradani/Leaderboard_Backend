@@ -81,17 +81,16 @@ router.get('/job/review', auth, async (req, res) => {
 
 router.get('/relevant', auth, async (req, res) => {
   try {
-    const all = [];
+    // const all;
     const jobPosts = await Post.find({ isRelevant: false }).sort({
       date: -1,
     });
-    const eventPosts = await E_Post.find({ isRelevant: false })
-      .sort({
-        date: -1,
-      })
-      .countDocuments();
-    all.push(jobPosts, eventPosts);
-    res.json(all);
+    const eventPosts = await E_Post.find({ isRelevant: false }).sort({
+      date: -1,
+    });
+    const allpost = eventPosts.concat(jobPosts);
+    res.json(allpost);
+    //console.log(JSON.stringify(allpost, null, 2));
   } catch (err) {
     console.log(err.message);
     res.status(500).send('Server Error');
