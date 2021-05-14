@@ -8,6 +8,22 @@ const Post = require('../../models/Post');
 const User = require('../../models/User');
 
 // get all posts
+router.get('/all', auth, async (req, res) => {
+  try {
+    const posts = await Post.find().sort({
+      date: -1,
+    });
+    const eventPosts = await E_Post.find().sort({
+      data: -1,
+    });
+    const allpost = eventPosts.concat(posts);
+    res.json(allpost);
+  } catch (err) {
+    console.log(err.message);
+    res.status(500).send('Server Error');
+  }
+});
+
 router.get('/job', auth, async (req, res) => {
   try {
     const posts = await Post.find().sort({
