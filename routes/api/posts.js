@@ -90,46 +90,46 @@ router.get('/relevant', auth, async (req, res) => {
     });
     const allpost = eventPosts.concat(jobPosts);
     res.json(allpost);
-    //console.log(JSON.stringify(allpost, null, 2));
   } catch (err) {
     console.log(err.message);
     res.status(500).send('Server Error');
   }
 });
 
-router.put('/relevant/:id', auth, async (req, res) => {
+router.put('/job/relevant/:id', auth, async (req, res) => {
   try {
-    // const updatedJob = await Post.findOneAndUpdate(
-    //   { _id: req.params.id },
-    //   {
-    //     $set: {
-    //       isRelevant: true,
-    //     },
-    //   },
-    //   { new: true }
-    // );
-    const updatedEvent = await E_Post.findByIdAndUpdate(req.params.id);
-    // const updatedEvent = await E_Post.findOneAndUpdate(
-    //   { _id: req.params.id },
-    //   {
-    //     $set: {
-    //       isRelevant: true,
-    //     },
-    //   },
-    //   { new: true }
-    // );
-    //console.log(updatedJob);
-    //console.log(updatedEvent);
-    // if (updatedJob) {
-    //   await updatedJob.save();
-    //   return res.json(updatedJob);
-    // }
-    //else {
-    console.log(updatedEvent);
+    const updatedJob = await Post.findOneAndUpdate(
+      { _id: req.params.id },
+      {
+        $set: {
+          isRelevant: true,
+        },
+      },
+      { new: true }
+    );
+
+    await updatedJob.save();
+    res.json(updatedJob);
+  } catch (err) {
+    console.log(err.message);
+    res.status(500).send('Server Error');
+  }
+});
+
+router.put('/event/relevant/:id', auth, async (req, res) => {
+  try {
+    const updatedEvent = await E_Post.findOneAndUpdate(
+      { _id: req.params.id },
+      {
+        $set: {
+          isRelevant: true,
+        },
+      },
+      { new: true }
+    );
+
+    await updatedEvent.save();
     res.json(updatedEvent);
-    //await updatedEvent.save();
-    //return res.json(updatedEvent);
-    //}
   } catch (err) {
     console.log(err.message);
     res.status(500).send('Server Error');
