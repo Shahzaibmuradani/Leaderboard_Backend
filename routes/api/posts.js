@@ -161,7 +161,7 @@ router.get('/job/:id', auth, async (req, res) => {
 });
 
 // get post by Id
-router.get('/job/user', auth, async (req, res) => {
+router.get('/user/job', auth, async (req, res) => {
   try {
     const post = await Post.find({ user: req.user.id });
     if (!post) {
@@ -174,7 +174,7 @@ router.get('/job/user', auth, async (req, res) => {
   }
 });
 
-router.get('/event/user', auth, async (req, res) => {
+router.get('/user/event', auth, async (req, res) => {
   try {
     const post = await E_Post.find({ user: req.user.id });
 
