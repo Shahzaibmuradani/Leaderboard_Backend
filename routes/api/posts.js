@@ -555,28 +555,51 @@ router.put(
 //   }
 // );
 
-// router.delete('/:id', auth, async (req, res) => {
-//   try {
-//     const post = await Post.findById(req.params.id);
+router.delete('/job/:id', auth, async (req, res) => {
+  try {
+    const post = await Post.findById(req.params.id);
 
-//     if (!post) {
-//       return res.status(404).json({ msg: 'Post not Found' });
-//     }
+    if (!post) {
+      return res.status(404).json({ msg: 'Post not Found' });
+    }
 
-//     if (post.user.toString() !== req.user.id) {
-//       return res.status(401).json({ msg: 'User not authorized' });
-//     }
+    // if (post.user.toString() !== req.user.id) {
+    //   return res.status(401).json({ msg: 'User not authorized' });
+    // }
 
-//     await post.remove();
-//     res.json({ msg: 'Post removed' });
-//   } catch (err) {
-//     console.log(err.message);
-//     if (err.kind === 'ObjectId') {
-//       return res.status(404).json({ msg: 'Post not Found' });
-//     }
-//     res.status(500).send('Server Error');
-//   }
-// });
+    await post.remove();
+    res.json({ msg: 'Post removed' });
+  } catch (err) {
+    console.log(err.message);
+    if (err.kind === 'ObjectId') {
+      return res.status(404).json({ msg: 'Post not Found' });
+    }
+    res.status(500).send('Server Error');
+  }
+});
+
+router.delete('/event/:id', auth, async (req, res) => {
+  try {
+    const post = await E_Post.findById(req.params.id);
+
+    if (!post) {
+      return res.status(404).json({ msg: 'Post not Found' });
+    }
+
+    // if (post.user.toString() !== req.user.id) {
+    //   return res.status(401).json({ msg: 'User not authorized' });
+    // }
+
+    await post.remove();
+    res.json({ msg: 'Post removed' });
+  } catch (err) {
+    console.log(err.message);
+    if (err.kind === 'ObjectId') {
+      return res.status(404).json({ msg: 'Post not Found' });
+    }
+    res.status(500).send('Server Error');
+  }
+});
 
 //like job post
 router.put('/job/like/:id', auth, async (req, res) => {
@@ -676,7 +699,6 @@ router.post(
     }
 
     try {
-      console.log('Welcome');
       const user = await User.findById(req.user.id).select('-password');
       const post = await Post.findById(req.params.id);
 
