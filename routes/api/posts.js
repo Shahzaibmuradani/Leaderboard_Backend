@@ -161,10 +161,23 @@ router.get('/job/:id', auth, async (req, res) => {
 });
 
 // get post by Id
-router.get('/user/jobs', auth, async (req, res) => {
+router.get('/job/user', auth, async (req, res) => {
   try {
     const post = await Post.find({ user: req.user.id });
-    console.log(post);
+    if (!post) {
+      return res.status(404).json({ msg: 'Post not Found' });
+    }
+    res.json(post);
+  } catch (err) {
+    console.log(err.message);
+    res.status(500).send('Server Error');
+  }
+});
+
+router.get('/event/user', auth, async (req, res) => {
+  try {
+    const post = await E_Post.find({ user: req.user.id });
+
     if (!post) {
       return res.status(404).json({ msg: 'Post not Found' });
     }
