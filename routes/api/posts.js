@@ -498,22 +498,23 @@ router.put(
 //answer faqs
 router.put('/test/:postId/:testId', auth, async (req, res) => {
   try {
-    console.log(req.body);
+    //  console.log(req.body);
     const user = await User.findById(req.user.id);
     console.log(JSON.stringify(user, null, 2));
-    // const updatedpost = await Post.findOneAndUpdate(
-    //   { 'faqs._id': req.params.faqid },
-    //   {
-    //     $set: {
-    //           'faqs.$.user': req.user.id,
-    //           'faqs.$.name': user.name,
-    //           'faqs.$.avatar': user.avatar,
-    //           'faqs.$.answers': answers,
-    //     },
-    //   },
-    //   { new: true }
-    // )
 
+    const updatedpost = await Post.findOneAndUpdate(
+      { 'faqs._id': req.params.testId },
+      {
+        $set: {
+          'faqs.$.user': req.user.id,
+          'faqs.$.name': user.name,
+          'faqs.$.avatar': user.avatar,
+          'faqs.$.answers': req.body,
+        },
+      },
+      { new: true }
+    );
+    res.json(updatedpost);
     // const post = await Post.findById(req.params.id);
     // const exists = post.faqs.filter(
     //   (faq) => JSON.stringify(faq.user) === req.user.id
