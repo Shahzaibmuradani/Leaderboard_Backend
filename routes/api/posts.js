@@ -496,48 +496,49 @@ router.put(
 // });
 
 //answer faqs
-router.put('/test/:postId/:testId', auth, async (req, res) => {
-  try {
-    //  console.log(req.body);
-    const user = await User.findById(req.user.id);
-    console.log(JSON.stringify(user, null, 2));
+// router.put('/test/:postId/:testId', auth, async (req, res) => {
+//   try {
+//     //  console.log(req.body);
+//     const user = await User.findById(req.user.id);
+//     console.log(JSON.stringify(user, null, 2));
 
-    const updatedpost = await Post.findOneAndUpdate(
-      { 'faqs._id': req.params.testId },
-      {
-        $set: {
-          'faqs.$.user': req.user.id,
-          'faqs.$.name': user.name,
-          'faqs.$.avatar': user.avatar,
-          'faqs.$.answers': req.body,
-        },
-      },
-      { new: true }
-    );
-    res.json(updatedpost);
-    // const post = await Post.findById(req.params.id);
-    // const exists = post.faqs.filter(
-    //   (faq) => JSON.stringify(faq.user) === req.user.id
-    // ).length;
-    // if (exists) {
-    //   return res.status(400).json({ msg: 'Already Applied' });
-    // } else {
-    //   const { a1, a2, a3 } = req.body;
-    //   const answers = {};
-    //   if (a1 || a2 || a3) {
-    //     answers.a1 = a1;
-    //     answers.a2 = a2;
-    //     answers.a3 = a3;
-    //   }
-    //   );
-    //   return res.json(updatedpost);
-    // }
-    //}
-  } catch (err) {
-    console.log(err.message);
-    res.status(500).send('Server Error');
-  }
-});
+//     const updatedpost = await Post.findOneAndUpdate(
+//       { 'faqs._id': req.params.testId },
+//       {
+//         $set: {
+//           'faqs.$.user': req.user.id,
+//           'faqs.$.name': user.name,
+//           'faqs.$.avatar': user.avatar,
+//           'faqs.$.answers': req.body,
+//         },
+//       },
+//       { new: true }
+//     );
+//     await updatedpost.save();
+//     res.json(updatedpost);
+//     // const post = await Post.findById(req.params.id);
+//     // const exists = post.faqs.filter(
+//     //   (faq) => JSON.stringify(faq.user) === req.user.id
+//     // ).length;
+//     // if (exists) {
+//     //   return res.status(400).json({ msg: 'Already Applied' });
+//     // } else {
+//     //   const { a1, a2, a3 } = req.body;
+//     //   const answers = {};
+//     //   if (a1 || a2 || a3) {
+//     //     answers.a1 = a1;
+//     //     answers.a2 = a2;
+//     //     answers.a3 = a3;
+//     //   }
+//     //   );
+//     //   return res.json(updatedpost);
+//     // }
+//     //}
+//   } catch (err) {
+//     console.log(err.message);
+//     res.status(500).send('Server Error');
+//   }
+// });
 
 // router.put(
 //   '/:id',
