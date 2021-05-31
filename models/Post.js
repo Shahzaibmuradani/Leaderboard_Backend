@@ -67,7 +67,21 @@ const PostSchema = new Schema({
       },
     },
   ],
-  faqs: [
+  test: [
+    {
+      questions: [
+        {
+          index: {
+            type: Number,
+          },
+          text: {
+            type: String,
+          },
+        },
+      ],
+    },
+  ],
+  responses: [
     {
       user: {
         type: Schema.Types.ObjectId,
@@ -79,16 +93,10 @@ const PostSchema = new Schema({
       avatar: {
         type: String,
       },
-      questions: [
-        {
-          index: {
-            type: Number,
-          },
-          text: {
-            type: String,
-          },
-        },
-      ],
+      date: {
+        type: Date,
+        default: Date.now,
+      },
       answers: [
         {
           index: {
