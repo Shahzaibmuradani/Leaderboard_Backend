@@ -486,16 +486,19 @@ router.put(
 router.put('/test/:postId/:testId', auth, async (req, res) => {
   try {
     const user = await User.findById(req.user.id);
-    console.log(JSON.stringify(user, null, 2));
+    //  console.log(JSON.stringify(user, null, 2));
+    const responses = {
+      user: req.user.id,
+      name: user.name,
+      avatar: user.avatar,
+      answers: req.body,
+    };
 
     const updatedpost = await Post.findOneAndUpdate(
-      { 'faqs._id': req.params.testId },
+      { 'test._id': req.params.testId },
       {
         $set: {
-          'faqs.$.user': req.user.id,
-          'faqs.$.name': user.name,
-          'faqs.$.avatar': user.avatar,
-          'faqs.$.answers': req.body,
+          responses: responses,
         },
       },
       { new: true }
