@@ -276,7 +276,7 @@ router.post(
         post_type: post_type,
         field: field,
         text: text,
-        test: questions,
+        test: { questions: questions },
         skills: skills.split(',').map((skill) => skill.trim()),
         email: email,
         company: company,
