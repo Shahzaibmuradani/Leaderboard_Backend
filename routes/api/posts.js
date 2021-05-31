@@ -266,19 +266,6 @@ router.post(
       questions,
     } = req.body;
 
-    // const newPost = {};
-    // newPost.user = req.user.id;
-    // if (text) newPost.text = text;
-    // if (skills) {
-    //   newPost.skills = skills.split(',').map((skill) => skill.trim());
-    // }
-    // if (field) newPost.field = field;
-    // if (location) newPost.location = location;
-    // if (company) newPost.company = company;
-    // if (post_type) newPost.post_type = post_type;
-    // if (email) newPost.email = email;
-    // if (faqs) newPost.faqs.questions = faqs;
-
     try {
       let newPost;
       const user = await User.findById(req.user.id).select('-password');
@@ -289,7 +276,7 @@ router.post(
         post_type: post_type,
         field: field,
         text: text,
-        faqs: { questions: questions },
+        test: questions,
         skills: skills.split(',').map((skill) => skill.trim()),
         email: email,
         company: company,
