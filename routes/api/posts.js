@@ -483,10 +483,10 @@ router.put(
 // });
 
 //answer faqs
-router.put('/test/:postId/:testId', auth, async (req, res) => {
+router.put('/test/:postId', auth, async (req, res) => {
   try {
     const user = await User.findById(req.user.id);
-    //  console.log(JSON.stringify(user, null, 2));
+
     const responses = {
       user: req.user.id,
       name: user.name,
@@ -494,17 +494,12 @@ router.put('/test/:postId/:testId', auth, async (req, res) => {
       answers: req.body,
     };
 
-    const updatedpost = await Post.findOneAndUpdate(
-      { 'test._id': req.params.testId },
-      {
-        $set: {
-          responses: responses,
-        },
-      },
-      { new: true }
-    );
-    await updatedpost.save();
-    res.json(updatedpost);
+    const post = await Post.findOne({
+      _id: req.params.postId,
+    });
+    post.responses.unshift(responses);
+    await post.save();
+    res.json(post);
   } catch (err) {
     console.log(err.message);
     res.status(500).send('Server Error');
