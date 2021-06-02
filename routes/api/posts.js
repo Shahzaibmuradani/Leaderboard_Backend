@@ -491,6 +491,7 @@ router.put('/test/:postId', auth, async (req, res) => {
       user: req.user.id,
       name: user.name,
       avatar: user.avatar,
+      email: user.email,
       answers: req.body,
     };
 
