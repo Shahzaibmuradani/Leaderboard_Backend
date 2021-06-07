@@ -298,7 +298,7 @@ router.post(
       if (location) newPost.location = location;
       if (company) newPost.company = company;
       if (email) newPost.email = email;
-      if (questions) {
+      if (questions.length > 0) {
         newPost.test = {};
         newPost.test.questions = questions;
       }
