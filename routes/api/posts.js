@@ -298,8 +298,10 @@ router.post(
       if (location) newPost.location = location;
       if (company) newPost.company = company;
       if (email) newPost.email = email;
-      newPost.test = {};
-      if (questions) newPost.test.questions = questions;
+      if (questions) {
+        newPost.test = {};
+        newPost.test.questions = questions;
+      }
 
       const jobPost = new Post(newPost);
 
