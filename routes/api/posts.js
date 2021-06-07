@@ -213,31 +213,31 @@ router.get('/event/:id', auth, async (req, res) => {
 });
 
 // get faq by Id
-router.get('/faqs/:id/:faqid', auth, async (req, res) => {
-  try {
-    const post = await Post.findById(req.params.id);
-    if (!post) {
-      return res.status(404).json({ msg: 'Post not Found' });
-    }
-    const questions = await Post.findOne({
-      _id: req.params.id,
-    }).select({ faqs: 1 });
-    // else {
-    //   const exists = await Post.findOne({ 'faqs.user': req.user.id }).select({
-    //     user: 1,
-    //   });
-    //   if (exists) {
-    //     return res.status(400).json({ msg: 'Already Applied' });
-    //   }
-    // }
-    res.json(questions);
-  } catch (err) {
-    if (err.kind === 'ObjectId') {
-      return res.status(404).json({ msg: 'Post not Found' });
-    }
-    res.status(500).send('Server Error');
-  }
-});
+// router.get('/faqs/:id/:faqid', auth, async (req, res) => {
+//   try {
+//     const post = await Post.findById(req.params.id);
+//     if (!post) {
+//       return res.status(404).json({ msg: 'Post not Found' });
+//     }
+//     const questions = await Post.findOne({
+//       _id: req.params.id,
+//     }).select({ faqs: 1 });
+//     // else {
+//     //   const exists = await Post.findOne({ 'faqs.user': req.user.id }).select({
+//     //     user: 1,
+//     //   });
+//     //   if (exists) {
+//     //     return res.status(400).json({ msg: 'Already Applied' });
+//     //   }
+//     // }
+//     res.json(questions);
+//   } catch (err) {
+//     if (err.kind === 'ObjectId') {
+//       return res.status(404).json({ msg: 'Post not Found' });
+//     }
+//     res.status(500).send('Server Error');
+//   }
+// });
 
 //post
 router.post(
@@ -266,23 +266,57 @@ router.post(
       questions,
     } = req.body;
 
+    const studentprofileFields = {};
+    studentprofileFields.user = req.user.id;
+    if (bio) studentprofileFields.bio = bio;
+    if (skills) {
+      studentprofileFields.skills = skills
+        .split(',')
+        .map((skill) => skill.trim());
+    }
+    if (field) studentprofileFields.field = field;
+    if (location) studentprofileFields.location = location;
+    if (company) studentprofileFields.company = company;
+    // Build social object
+    studentprofileFields.social = {};
+    if (twitter) studentprofileFields.social.twitter = twitter;
+    if (facebook) studentprofileFields.social.facebook = facebook;
+    if (linkedin) studentprofileFields.social.linkedin = linkedin;
+
     try {
-      let newPost;
+      const newPost = {};
       const user = await User.findById(req.user.id).select('-password');
-      newPost = new Post({
-        user: req.user.id,
-        name: user.name,
-        avatar: user.avatar,
-        post_type: post_type,
-        field: field,
-        text: text,
-        test: { questions: questions },
-        skills: skills.split(',').map((skill) => skill.trim()),
-        email: email,
-        company: company,
-        location: location,
-      });
-      const post = await newPost.save();
+      newPost.user = req.user.id;
+      newPost.name = user.name;
+      newPost.avatar = user.avatar;
+      newPost.post_type = post_type;
+      newPost.text = text;
+      if (skills) {
+        newPost.skills = skills.split(',').map((skill) => skill.trim());
+      }
+      if (field) newPost.field = field;
+      if (location) newPost.location = location;
+      if (company) newPost.company = company;
+      if (email) newPost.email = email;
+      newPost.test = {};
+      if (questions) newPost.test.questions = questions;
+
+      const jobPost = new Post(newPost);
+
+      // newPost = new Post({
+      //   user: req.user.id,
+      //   name: user.name,
+      //   avatar: user.avatar,
+      //   post_type: post_type,
+      //   field: field,
+      //   text: text,
+      //   test: { questions: questions },
+      //   skills: skills.split(',').map((skill) => skill.trim()),
+      //   email: email,
+      //   company: company,
+      //   location: location,
+      // });
+      const post = await jobPost.save();
       const interest = await Post.aggregate([
         {
           $match: {
