@@ -266,23 +266,6 @@ router.post(
       questions,
     } = req.body;
 
-    const studentprofileFields = {};
-    studentprofileFields.user = req.user.id;
-    if (bio) studentprofileFields.bio = bio;
-    if (skills) {
-      studentprofileFields.skills = skills
-        .split(',')
-        .map((skill) => skill.trim());
-    }
-    if (field) studentprofileFields.field = field;
-    if (location) studentprofileFields.location = location;
-    if (company) studentprofileFields.company = company;
-    // Build social object
-    studentprofileFields.social = {};
-    if (twitter) studentprofileFields.social.twitter = twitter;
-    if (facebook) studentprofileFields.social.facebook = facebook;
-    if (linkedin) studentprofileFields.social.linkedin = linkedin;
-
     try {
       const newPost = {};
       const user = await User.findById(req.user.id).select('-password');
@@ -305,19 +288,6 @@ router.post(
 
       const jobPost = new Post(newPost);
 
-      // newPost = new Post({
-      //   user: req.user.id,
-      //   name: user.name,
-      //   avatar: user.avatar,
-      //   post_type: post_type,
-      //   field: field,
-      //   text: text,
-      //   test: { questions: questions },
-      //   skills: skills.split(',').map((skill) => skill.trim()),
-      //   email: email,
-      //   company: company,
-      //   location: location,
-      // });
       const post = await jobPost.save();
       const interest = await Post.aggregate([
         {
