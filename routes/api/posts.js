@@ -892,7 +892,7 @@ router.post('/send', async (req, res) => {
       },
       token: req.body.token,
     };
-    admin
+    await admin
       .messaging()
       .send(message)
       .then((res) => {

@@ -11,22 +11,22 @@ admin.initializeApp({
 
 router.post('/send', async (req, res) => {
   //   console.log(req.body);
-  const message = {
-    notification: {
-      title: 'New Post',
-      body: 'Check event Post',
-    },
-    token: req.body.token,
-  };
-  admin
-    .messaging()
-    .send(message)
-    .then((res) => {
-      console.log('success', res);
-    })
-    .catch((err) => {
-      err.message;
-    });
+  //   const message = {
+  //     notification: {
+  //       title: 'New Post',
+  //       body: 'Check event Post',
+  //     },
+  //     token: req.body.token,
+  //   };
+  //   admin
+  //     .messaging()
+  //     .send(message)
+  //     .then((res) => {
+  //       console.log('success', res);
+  //     })
+  //     .catch((err) => {
+  //       err.message;
+  //     });
 });
 
 module.exports = router;
