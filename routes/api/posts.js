@@ -886,6 +886,7 @@ router.delete('/event/comment/:id/:comment_id', auth, async (req, res) => {
 router.post('/send', async (req, res) => {
   try {
     console.log('Hello');
+    res.json('Hello');
   } catch (error) {
     console.log(error.message);
   }
