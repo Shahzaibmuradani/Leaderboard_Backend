@@ -9,7 +9,7 @@ admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
 });
 
-router.post('/notify', async (req, res) => {
+router.post('/send', async (req, res) => {
   console.log(req.body);
   // const message = {
   //   notification: {
@@ -29,3 +29,5 @@ router.post('/notify', async (req, res) => {
   //     err.message;
   //   });
 });
+
+module.exports = router;
