@@ -10,7 +10,8 @@ admin.initializeApp({
 });
 
 router.post('/send', async (req, res) => {
-  console.log(req.body);
+  console.log('Hello');
+  //   console.log(req.body);
   // const message = {
   //   notification: {
   //     title: 'New Post',
