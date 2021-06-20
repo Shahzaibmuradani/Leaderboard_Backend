@@ -13,7 +13,7 @@ app.get('/', (req, res) => res.send('API Running'));
 
 app.use(express.json({ extended: false }));
 
-app.use('/api/notify', require('./routes/api/notify'));
+// app.use('/api/notify', require('./routes/api/notify'));
 app.use('/api/help', require('./routes/api/help'));
 app.use('/api/posts', require('./routes/api/posts'));
 app.use('/api/profile', require('./routes/api/studentprofile'));
