@@ -885,8 +885,22 @@ router.delete('/event/comment/:id/:comment_id', auth, async (req, res) => {
 
 router.post('/send', async (req, res) => {
   try {
-    console.log('Hello');
-    res.json('Hello');
+    const message = {
+      notification: {
+        title: 'New Post',
+        body: 'Check event Post',
+      },
+      token: req.body.token,
+    };
+    admin
+      .messaging()
+      .send(message)
+      .then((res) => {
+        console.log('success', res);
+      })
+      .catch((err) => {
+        err.message;
+      });
   } catch (error) {
     console.log(error.message);
   }
