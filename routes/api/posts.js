@@ -1,19 +1,10 @@
 const express = require('express');
-//var mongoose = require('mongoose');
 const router = express.Router();
 const { check, validationResult } = require('express-validator');
 const auth = require('../../middleware/auth');
 const E_Post = require('../../models/E_Post');
 const Post = require('../../models/Post');
 const User = require('../../models/User');
-const fetch = require('node-fetch');
-
-// const admin = require('firebase-admin');
-// var serviceAccount = require('../../hearmeout-fea0b-firebase-adminsdk-tjvox-a5158c9583.json');
-
-// admin.initializeApp({
-//   credential: admin.credential.cert(serviceAccount),
-// });
 
 // get all posts
 router.get('/all', auth, async (req, res) => {
@@ -89,7 +80,6 @@ router.get('/job/review', auth, async (req, res) => {
 
 router.get('/relevant', auth, async (req, res) => {
   try {
-    // const all;
     const jobPosts = await Post.find({ isRelevant: false }).sort({
       date: -1,
     });
@@ -151,14 +141,6 @@ router.get('/job/:id', auth, async (req, res) => {
     if (!post) {
       return res.status(404).json({ msg: 'Post not Found' });
     }
-    // else {
-    //   const exists = await Post.findOne({ 'faqs.user': req.user.id }).select({
-    //     user: 1,
-    //   });
-    //   if (exists) {
-    //     return res.status(400).json({ msg: 'Already Applied' });
-    //   }
-    // }
     res.json(post);
   } catch (err) {
     if (err.kind === 'ObjectId') {
@@ -203,14 +185,6 @@ router.get('/event/:id', auth, async (req, res) => {
     if (!post) {
       return res.status(404).json({ msg: 'Post not Found' });
     }
-    // else {
-    //   const exists = await Post.findOne({ 'faqs.user': req.user.id }).select({
-    //     user: 1,
-    //   });
-    //   if (exists) {
-    //     return res.status(400).json({ msg: 'Already Applied' });
-    //   }
-    // }
     res.json(post);
   } catch (err) {
     if (err.kind === 'ObjectId') {
@@ -219,33 +193,6 @@ router.get('/event/:id', auth, async (req, res) => {
     res.status(500).send('Server Error');
   }
 });
-
-// get faq by Id
-// router.get('/faqs/:id/:faqid', auth, async (req, res) => {
-//   try {
-//     const post = await Post.findById(req.params.id);
-//     if (!post) {
-//       return res.status(404).json({ msg: 'Post not Found' });
-//     }
-//     const questions = await Post.findOne({
-//       _id: req.params.id,
-//     }).select({ faqs: 1 });
-//     // else {
-//     //   const exists = await Post.findOne({ 'faqs.user': req.user.id }).select({
-//     //     user: 1,
-//     //   });
-//     //   if (exists) {
-//     //     return res.status(400).json({ msg: 'Already Applied' });
-//     //   }
-//     // }
-//     res.json(questions);
-//   } catch (err) {
-//     if (err.kind === 'ObjectId') {
-//       return res.status(404).json({ msg: 'Post not Found' });
-//     }
-//     res.status(500).send('Server Error');
-//   }
-// });
 
 //post
 router.post(
@@ -399,21 +346,6 @@ router.post(
   }
 );
 
-// router.get('/', async (req, res) => {
-//   try {
-//     const post = await Post.findById(req.params.id);
-//     if (
-//       post.reviews.filter((review) => review.user.toString() === req.user.id)
-//         .length > 0
-//     ) {
-//       return res.status(400).json({ msg: 'Your Review already added' });
-//     }
-
-//   } catch (error) {
-//     console.log(error.message);
-//   }
-// });
-
 //add review
 router.put(
   '/job/review/:id',
@@ -449,54 +381,7 @@ router.put(
   }
 );
 
-//add questions
-// router.put('/faqs/:id', auth, async (req, res) => {
-//   // faqs: { questions: { q1, q2, q3 } }
-
-//   try {
-//     const post = await Post.findById(req.params.id);
-
-//     const exists = post.faqs.length > 0;
-
-//     if (exists) {
-//       return res.status(400).json({ msg: 'Already Added' });
-//     } else {
-//       const { q1, q2, q3 } = req.body;
-//       const questions = {};
-
-//       if (q1 || q2 || q3) {
-//         questions.q1 = q1;
-//         questions.q2 = q2;
-//         questions.q3 = q3;
-//       }
-//       console.log(questions);
-//       const po = await Post.findOne({ _id: req.params.id });
-//       po.faqs.unshift({ questions: { q1, q2, q3 } });
-//       // const up = new Post({
-//       //   faqs: { questions: { q1, q2, q3 } }
-//       // })
-//       await po.save();
-//       res.json(po);
-//       console.log(po);
-//       // const updatedpost = await Post.findOneAndUpdate(
-//       //   { _id: '6017ee41b1430f28d40e9a84' },
-//       //   {
-//       //     $set: {
-//       //       'faqs.$.questions': questions,
-//       //     },
-//       //   },
-//       //   { new: true }
-//       // );
-//       // console.log(updatedpost);
-//       // return res.json(updatedpost);
-//     }
-//   } catch (err) {
-//     console.log(err.message);
-//     res.status(500).send('Server Error');
-//   }
-// });
-
-//answer faqs
+//answer test
 router.put('/test/:postId', auth, async (req, res) => {
   try {
     const user = await User.findById(req.user.id);
@@ -890,55 +775,5 @@ router.delete('/event/comment/:id/:comment_id', auth, async (req, res) => {
     res.status(500).send('Server Error');
   }
 });
-
-// router.post('/send', async (req, res) => {
-//   var notification = {
-//     title: 'New Post',
-//     body: 'Check event Post',
-//   };
-//   // token: req.body.token,
-//   var notification_body = {
-//     notification: notification,
-//     registration_ids: req.body.token,
-//   };
-//   fetch('https://fcm.googleapis.com/fcm/send', {
-//     method: 'POST',
-//     headers: {
-//       Authorization:
-//         'key=' +
-//         'AAAAjrYfvfg:APA91bFz7jsCfqv_PlMYdWJbBFyDXaUKBGm2-Md4eWRGWzT9ENvorlL-9DrpBhImssmjQ0I1fvE6uONfKbkeMpJ5r2vIPYGf7zbZ24sxJ-GVWLnkcleIdqgv6OfDut2zk01SQLuJ_EhJ',
-//       'Content-Type': 'application/json',
-//     },
-//     body: JSON.stringify(notification_body),
-//   })
-//     .then((data) => {
-//       res.send({
-//         message: 'Notification Send',
-//       });
-//     })
-//     .catch((error) => {
-//       res.send({ message: error });
-//     });
-//   // try {
-//   //   const message = {
-//   //     notification: {
-//   //       title: 'New Post',
-//   //       body: 'Check event Post',
-//   //     },
-//   //     token: req.body.token,
-//   //   };
-//   //   await admin
-//   //     .messaging()
-//   //     .send(message)
-//   //     .then((res) => {
-//   //       console.log('success', res);
-//   //     })
-//   //     .catch((err) => {
-//   //       err.message;
-//   //     });
-//   // } catch (error) {
-//   //   console.log(error.message);
-//   // }
-// });
 
 module.exports = router;

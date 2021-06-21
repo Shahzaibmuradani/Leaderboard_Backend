@@ -1,13 +1,10 @@
 const express = require('express');
-//const request = require('request');
-//const config = require('config');
 const router = express.Router();
 const auth = require('../../middleware/auth');
 const { check, validationResult } = require('express-validator');
 const StudentProfile = require('../../models/StudentProfile');
 const Interest = require('../../models/Interest');
 const User = require('../../models/User');
-//const Post = require('../../models/Post');
 
 // @route GET api/studentprofile/me
 // @desc GET current users profile
@@ -182,15 +179,8 @@ router.put(
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const {
-      title,
-      company,
-      location,
-      from,
-      to,
-      current,
-      description,
-    } = req.body;
+    const { title, company, location, from, to, current, description } =
+      req.body;
 
     const newExp = {};
     if (title) newExp.title = title;
@@ -269,15 +259,8 @@ router.put(
     if (!errors) {
       return res.status(400).json({ errors: errors.array() });
     }
-    const {
-      title,
-      company,
-      location,
-      from,
-      to,
-      current,
-      description,
-    } = req.body;
+    const { title, company, location, from, to, current, description } =
+      req.body;
 
     const newExp = {};
     if (title) newExp.title = title;
@@ -354,15 +337,8 @@ router.put(
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const {
-      institute,
-      degree,
-      fieldofstudy,
-      from,
-      to,
-      current,
-      description,
-    } = req.body;
+    const { institute, degree, fieldofstudy, from, to, current, description } =
+      req.body;
 
     const newEdu = {};
     if (institute) newEdu.institute = institute;
@@ -402,15 +378,8 @@ router.put(
     if (!errors) {
       return res.status(400).json({ errors: errors.array() });
     }
-    const {
-      institute,
-      degree,
-      fieldofstudy,
-      from,
-      to,
-      current,
-      description,
-    } = req.body;
+    const { institute, degree, fieldofstudy, from, to, current, description } =
+      req.body;
 
     const newEdu = {};
     if (institute) newEdu.institute = institute;

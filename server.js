@@ -1,7 +1,6 @@
 const express = require('express');
 const connectDB = require('./config/db');
 const bodyParser = require('body-parser');
-// const core = require('cors')
 
 const app = express();
 
@@ -13,7 +12,6 @@ app.get('/', (req, res) => res.send('API Running'));
 
 app.use(express.json({ extended: false }));
 
-app.use('/api/notify', require('./routes/api/notify'));
 app.use('/api/help', require('./routes/api/help'));
 app.use('/api/posts', require('./routes/api/posts'));
 app.use('/api/profile', require('./routes/api/studentprofile'));
