@@ -7,6 +7,13 @@ const E_Post = require('../../models/E_Post');
 const Post = require('../../models/Post');
 const User = require('../../models/User');
 
+const admin = require('firebase-admin');
+var serviceAccount = require('../../hearmeout-fea0b-firebase-adminsdk-tjvox-a5158c9583.json');
+
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+});
+
 // get all posts
 router.get('/all', auth, async (req, res) => {
   try {
