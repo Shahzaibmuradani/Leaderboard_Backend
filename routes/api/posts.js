@@ -6,13 +6,14 @@ const auth = require('../../middleware/auth');
 const E_Post = require('../../models/E_Post');
 const Post = require('../../models/Post');
 const User = require('../../models/User');
+const fetch = require('node-fetch');
 
-const admin = require('firebase-admin');
-var serviceAccount = require('../../hearmeout-fea0b-firebase-adminsdk-tjvox-a5158c9583.json');
+// const admin = require('firebase-admin');
+// var serviceAccount = require('../../hearmeout-fea0b-firebase-adminsdk-tjvox-a5158c9583.json');
 
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
-});
+// admin.initializeApp({
+//   credential: admin.credential.cert(serviceAccount),
+// });
 
 // get all posts
 router.get('/all', auth, async (req, res) => {
@@ -890,27 +891,54 @@ router.delete('/event/comment/:id/:comment_id', auth, async (req, res) => {
   }
 });
 
-router.post('/send', async (req, res) => {
-  try {
-    const message = {
-      notification: {
-        title: 'New Post',
-        body: 'Check event Post',
-      },
-      token: req.body.token,
-    };
-    await admin
-      .messaging()
-      .send(message)
-      .then((res) => {
-        console.log('success', res);
-      })
-      .catch((err) => {
-        err.message;
-      });
-  } catch (error) {
-    console.log(error.message);
-  }
-});
+// router.post('/send', async (req, res) => {
+//   var notification = {
+//     title: 'New Post',
+//     body: 'Check event Post',
+//   };
+//   // token: req.body.token,
+//   var notification_body = {
+//     notification: notification,
+//     registration_ids: req.body.token,
+//   };
+//   fetch('https://fcm.googleapis.com/fcm/send', {
+//     method: 'POST',
+//     headers: {
+//       Authorization:
+//         'key=' +
+//         'AAAAjrYfvfg:APA91bFz7jsCfqv_PlMYdWJbBFyDXaUKBGm2-Md4eWRGWzT9ENvorlL-9DrpBhImssmjQ0I1fvE6uONfKbkeMpJ5r2vIPYGf7zbZ24sxJ-GVWLnkcleIdqgv6OfDut2zk01SQLuJ_EhJ',
+//       'Content-Type': 'application/json',
+//     },
+//     body: JSON.stringify(notification_body),
+//   })
+//     .then((data) => {
+//       res.send({
+//         message: 'Notification Send',
+//       });
+//     })
+//     .catch((error) => {
+//       res.send({ message: error });
+//     });
+//   // try {
+//   //   const message = {
+//   //     notification: {
+//   //       title: 'New Post',
+//   //       body: 'Check event Post',
+//   //     },
+//   //     token: req.body.token,
+//   //   };
+//   //   await admin
+//   //     .messaging()
+//   //     .send(message)
+//   //     .then((res) => {
+//   //       console.log('success', res);
+//   //     })
+//   //     .catch((err) => {
+//   //       err.message;
+//   //     });
+//   // } catch (error) {
+//   //   console.log(error.message);
+//   // }
+// });
 
 module.exports = router;
