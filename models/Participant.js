@@ -1,25 +1,26 @@
 const mongoose = require('mongoose');
 
-const UserSchema = new mongoose.Schema({
-  name: {
+const ParticipantSchema = new mongoose.Schema({
+  participantName: {
     type: String,
     required: true,
   },
-  email: {
-    type: String,
-    required: true,
-    unique: true,
-  },
-  password: {
+  location: {
     type: String,
     required: true,
   },
-  avatar: {
-    type: String,
-  },
-  status: {
+  units: {
     type: String,
     required: true,
+  },
+  type: {
+    type: String,
+  },
+  points: {
+    type: String,
+  },
+  selectedDate: {
+    type: Date,
   },
   date: {
     type: Date,
@@ -27,4 +28,4 @@ const UserSchema = new mongoose.Schema({
   },
 });
 
-module.exports = User = mongoose.model('user', UserSchema);
+module.exports = Participant = mongoose.model('participant', ParticipantSchema);
